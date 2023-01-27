@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Landeshauptstädte</title>
+    <script>
+        function change(land){
+            debugger;
+            var xhr = null;
+            xhr = new XMLHttpRequest();
+            xhr.open('GET','landeshauptstadte.php',true);
+            xhr.onreadystatechange = ausgeben(xhr); 
+            xhr.send(land); 
+        }
+        function getCallAjax(uri,body){
+            debugger;
+            const datam = {
+                land: body.value
+            }
+            $.ajax({
+                url: uri,
+                type: 'GET',
+                data: datam,
+                dataType: 'json', 
+                success: function(res) {
+                    console.log(res);
+                    ausgeben();
+                }
+            });
+        }
+        
+        function getCallWithBody(url,body){
+            debugger;
+            
+            return new Promise((resolve, reject) => {
+                var xhr = new XMLHttpRequest();
+                xhr.open('GET', url, true);
+                xhr.onload = function() {
+                    if (this.status == 200) {
+                        ausgeben(xhr)
+                        resolve(this.response);
+                    }
+                    else {
+                        reject(Error(this.statusText));
+                    }
+                };
+                xhr.onerror = function() {
+                    reject(Error("Network Error"));
+                };
+                var out = JSON.stringify("land :"+body.value);
+                xhr.send(out);
+            });
+        }       
+        function ausgeben(xhr){
+            if(xhr.readyState == 4){ 
+                var daten = xhr.responseText; 
+                daten = eval("(" + daten + ")"); 
+                var ausgabe = document.getElementById("ausgabe"); 
+                for (i = 0; i < daten.length; i++){ 
+                    var link = daten[i]; 
+                    li = document.createElement("li"); 
+                    a = document.createElement("a"); 
+                    a.setAttribute("href", link.Url); 
+                    var txt = document.createTextNode(link.Text);
+                    a.appendChild(txt); 
+                    li.appendChild(txt);
+                    ausgabe.appendChild(li);
+                }
+            }
+            else{
+                alert("Fehler");
+            }
+        }
+    </script>
+</head>
+<body>
+    <select name="land" onchange="getCallAjax('landeshauptstadte.php',this)">
+        <option value="Deutschland">Deutschland</option>
+        <option value="Frankreich">Frankreich</option>
+        <option value="Italien">Italien</option>
+        <option value="Spanien">Spanien</option>
+        <option value="Schweiz">Schweiz</option>
+    </select>
+<ul id="ausgabe"></ul>
+</body>
+</html>
