@@ -71,7 +71,7 @@
                 color: white;
             }
         </style>
-            <table id="customers">
+                <table id="customers">
                 <tr>
                     <?php
                         foreach ($a[0] as $key => $value){
